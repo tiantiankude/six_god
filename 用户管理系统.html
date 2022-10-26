@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    a {
+        text-decoration: none;
+        color: red;
+    }
+
+    .sbg {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        opacity: 0.4;
+        z-index: 1;
+    }
+
+    body {
+        background-color: #f0ece9;
+    }
+
+    header {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+    }
+
+    header h1 {
+        color: #9a9897;
+    }
+
+    header hr {
+        margin: 20px 20px 0;
+        background-color: #bc9470;
+        border: 2px solid #bc9470;
+        width: 30%;
+        height: 0;
+    }
+
+    main #adbt {
+        margin-left: 70px;
+    }
+
+    main button {
+        margin: 20px 5px;
+        width: 85px;
+        height: 40px;
+        color: black;
+    }
+
+    main button.gre {
+        background-color: #5cb85c;
+    }
+
+    main button.red {
+        background-color: #d9534f;
+    }
+
+    main #navigate {
+        padding: 0 70px;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+    }
+
+    main #navigate p {
+        margin-top: 30px;
+    }
+
+    table {
+        margin: 0 auto;
+        width: 90%;
+        text-align: center;
+        border-spacing: 0;
+    }
+
+    table tbody tr:first-of-type {
+        background-color: #dadee1 !important;
+        height: 60px;
+    }
+
+    table tbody tr {
+        height: 45px;
+    }
+
+    table tbody tr:nth-child(odd) {
+        background-color: #eef1f8;
+    }
+
+    table tbody tr:nth-child(even) {
+        background-color: #f1eded;
+    }
+
+    table tbody tr:not([id=thead]):hover {
+        cursor: pointer;
+        background-color: #e9e9e9;
+    }
+
+    input {
+        border: none;
+        border-bottom: 1px #777 solid;
+        height: 40px;
+        background-color: rgba(0, 0, 0, 0);
+    }
+</style>
+
+<body>
+    <div>
+        <header>
+            <hr />
+            <h1>学生信息管理系统</h1>
+            <hr />
+        </header>
+        <main>
+            <div>
+                <div id="adbt">
+                    <button class="gre" id="add">新增行</button>
+                </div>
+                <table>
+                    <tbody>
+
+                        <!-- <tr>
+                    <td name="abc"><input type="checkbox"></td>
+                    <td>1</td>
+                    <td>11503080201</td>
+                    <td>张三</td>
+                    <td>123</td>
+                    <td><button>修改</button><button>删除</button></td>
+                </tr> -->
+
+                    </tbody>
+                </table>
+                <div id="navigate">
+                    <p>第<span id="pgn"></span>页,共<span id="en"></span>条 (每页最多显示10条)</p>
+                    <!--Number of entries-->
+                    <div id="tpbt">
+                        <button class="gre" id="lastpage">上一页</button>
+                        <button class="red" id="nextpage">下一页</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</body>
+<script>
+    let admins = [
+        {
+            "user": "sa",
+            "userName": "管理员",
+            "password": "123"
+        }, {
+            "user": "zhangsan",
+            "userName": "张三",
+            "password": "123"
+        }, {
+            "user": "lisi",
+            "userName": "李四",
+            "password": "123"
+        }, {
+            "user": "wangwu",
+            "userName": "王五",
+            "password": "123"
+        }, {
+            "user": "chengliu",
+            "userName": "陈六",
+            "password": "123"
+        }];
+    $(function () {
+
+        let xindex = 0;
+        let page = 1;//第几页
+        let no = 0;//显示的页数的第一个对象是数组中的第几个对象，初始下标为0
+        function htmladd() {
+
+            let adminNumber = admins.length;
+            $("tbody").append(` <tr id="thead">
+                            <td>序号</td>
+                            <td>账号</td>
+                            <td>姓名</td>
+                            <td>密码</td>
+                            <td>操作</td>
+
+                        </tr>`)
+            for (let i = 0; i < 10; i++) {//初始页面信息显示
+
+                let student = $(`
+            <tr>
+              <td>${i + 1}</td>
+              <td class="id">${admins[i].user}</td>
+              <td class="name">${admins[i].userName}</td>
+              <td  class="password">${admins[i].password}</td>
+              <td><button class="xiug">修改</button>
+                <button class="dele">删除</button></td>
+             </tr>
+                `);
+                $("tbody").append(student);
+                if ($("tr").length === adminNumber + 1) {
+                    break;
+                }
+
+            }
+            $("#pgn").html(`${page}`);
+            $("#en").text(adminNumber);
+
+            $(".xiug").click(function () {
+
+                admins.forEach((item, index) => {
+
+                    if (item.user === $(this).parent().parent().children(".id").html()) {
+                        xindex = index
+                    }
+                    if (admins + 1 < $("tr".length)) {
+                        xindex = $("tr").length + 1
+                    }
+
+                })
+                if (this.innerHTML === "修改") {
+
+                    let xThis = $(this).parent().parent().children(".id").html();
+                    let yThis = $(this).parent().parent().children(".name").html();
+                    let zThis = $(this).parent().parent().children(".password").html();
+
+                    $(this).parent().parent().children(".id").html(`<input type='text' value=${xThis}>`);
+                    $(this).parent().parent().children(".name").html(`<input type='text' value=${yThis}>`);
+                    $(this).parent().parent().children(".password").html(`<input type='text' value=${zThis}>`);
+                    $(this).html("保存")
+                } else if (this.innerHTML === "保存") {
+
+                    let xThis = $(this).parent().parent().children(".id").children("input").val();
+                    let yThis = $(this).parent().parent().children(".name").children("input").val();;
+                    let zThis = $(this).parent().parent().children(".password").children("input").val();;
+
+                    admins[xindex].user = xThis;
+                    admins[xindex].userName = yThis;
+                    admins[xindex].password = zThis;
+                    $("tbody").html("");
+                    htmladd()
+
+                }
+
+
+            })
+
+            $(".dele").click(function () {
+                $(this).parent().parent().remove();
+                admins.forEach((item, index) => {
+
+                    if (item.user === $(this).parent().parent().children(".id").html()) {
+                        admins.splice(index, 1);
+                    }
+                    $("tbody").html("");
+                    htmladd()
+                })
+
+            })
+        }
+
+        htmladd()
+        $("#add").click(function () {
+            $("tbody").append(`<tr>
+                      <td>${$("tr").length}</td>
+                      <td class="id"><input type="text"></td>
+                      <td class="name"><input type="text"></td>
+                      <td class="password"><input type="text"></td>
+                      <td><button class="xiug">保存</button>
+                        <button class="dele">删除</button></td>
+                  </tr>
+          `);
+          let trindex = $("tr").length
+    
+          $($($("tr")[trindex-1]).children("td")[4]).children(".xiug").click(function() {
+                let xThis = $(this).parent().parent().children(".id").children("input").val();
+                let yThis = $(this).parent().parent().children(".name").children("input").val();
+                let zThis = $(this).parent().parent().children(".password").children("input").val();
+           var obj = new Object();
+            obj.user = $(this).parent().parent().children(".id").children("input").val();
+            obj.userName =  $(this).parent().parent().children(".name").children("input").val();
+            obj.password = $(this).parent().parent().children(".password").children("input").val();
+              admins.push(obj);
+                $("tbody").html("");
+                htmladd()
+          })
+          
+          $($($("tr")[trindex-1]).children("td")[4]).children(".dele").click(function() {
+            $(this).parent().parent().remove();
+                admins.forEach((item, index) => {
+
+                    if (item.user === $(this).parent().parent().children(".id").html()) {
+                        admins.splice(index, 1);
+                    }
+                    $("tbody").html("");
+                    htmladd()
+                })
+          })
+          
+        })
+    
+        $("tbody").trigger("create");//trigger() 方法触发被选元素上指定的事件以及事件的默认行为（比如表单提交）
+    })
+</script>
+
+</html>
